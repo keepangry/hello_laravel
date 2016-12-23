@@ -29,5 +29,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies($gate);
 
         //
+        $gate->define('status-destroy', function ($user, $status) {
+          return $user->id === $status->user_id;
+        });
+        $gate->define('user-destroy', function ($currentUser, $user) {
+          return $currentUser->is_admin && $currentUser->id !== $user->id;
+        });
     }
 }

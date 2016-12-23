@@ -105,11 +105,15 @@ class UsersController extends Controller
      */
     public function show($id)
     {
+
         //
         $user = User::findOrFail($id);
         $statuses = $user->statuses()
                            ->orderBy('created_at', 'desc')
                            ->paginate(30);
+        // $this->authorize('destory',$statuses[0]);
+        // dd(can('destroy', $statuses[0]));
+
         return view('users.show', compact('user','statuses'));
     }
 
