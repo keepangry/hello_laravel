@@ -8,32 +8,14 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use Auth;
 
-class StaticPagesController extends Controller
+class StatusesController extends Controller
 {
-  public function home()
-  {
-    $feed_items = [];
-    if (Auth::check()) {
-        $feed_items = Auth::user()->feed()->paginate(30);
-    }
-
-    return view('static_pages/home', compact('feed_items'));
-  }
-
-  public function help()
-  {
-    return view('static_pages/help');
-  }
-
-  public function about()
-  {
-    return view('static_pages/about');
-  }
-
-
-
-
-
+    public function __construct()
+      {
+          $this->middleware('auth', [
+              'only' => ['store', 'destroy']
+          ]);
+      }
 
     /**
      * Display a listing of the resource.
@@ -64,6 +46,14 @@ class StaticPagesController extends Controller
     public function store(Request $request)
     {
         //
+        $this->validate($request, [
+            'content' => 'required|max:140'
+        ]);
+
+        Auth::user()->statuses()->create([
+            'content' => $request->content
+        ]);
+        return redirect()->back();
     }
 
     /**
@@ -109,5 +99,10 @@ class StaticPagesController extends Controller
     public function destroy($id)
     {
         //
+        $status = Status::findOrFail($id);
+        $this->authorize('destroy', $status);
+        $status->delete();
+        session()->flash('success', '微博已被成功删除！');
+        return redirect()->back();
     }
 }

@@ -35,3 +35,6 @@ get('/users/{id}/edit', 'UsersController@edit')->name('users.edit');
 
 
 get('signup/confirm/{token}', 'UsersController@confirmEmail')->name('confirm_email');
+
+
+resource('statuses', 'StatusesController', ['only' => ['store', 'destroy']]);
